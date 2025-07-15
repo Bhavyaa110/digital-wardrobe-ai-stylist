@@ -3,7 +3,7 @@ import next from "next";
 
 const app = next({
   dev: false,
-  conf: { istDir: ".next"},
+  conf: {istDir: ".next"},
 });
 
 const handle = app.getRequestHandler();

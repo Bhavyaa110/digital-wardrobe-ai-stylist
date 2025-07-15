@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "styleai-wardrobe-8gtpu"
-  }
+    "default": "digital-wardrobe-ai-stylist110"
+  },
+  "targets": {},
+  "etags": {}
 }
