@@ -8,8 +8,8 @@
  * - TagClothingItemOutput - The return type for the tagClothingItem function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@genkit-ai/core';
+import { z } from 'genkit';
 
 const TagClothingItemInputSchema = z.object({
   photoDataUri: z

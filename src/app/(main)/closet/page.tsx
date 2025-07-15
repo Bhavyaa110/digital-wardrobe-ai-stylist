@@ -1,4 +1,4 @@
-import { ClothingList } from "@/components/closet/ClothingList";
+import { ClothingList } from "../../../components/closet/ClothingList";
 
 export default function ClosetPage() {
   return (

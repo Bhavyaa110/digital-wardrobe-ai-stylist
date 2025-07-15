@@ -9,9 +9,8 @@
  */
 
 'use server';
-
-import {ai} from '@/ai/genkit';
-import {z} from 'zod';
+import { ai } from '@genkit-ai/core';
+import { z } from 'genkit';
 
 const GenerateOutfitSuggestionsInputSchema = z.object({
   occasion: z.string().describe('The occasion for which an outfit is needed.'),

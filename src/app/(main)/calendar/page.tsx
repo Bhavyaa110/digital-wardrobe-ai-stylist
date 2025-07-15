@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from 'react';
-import { useWardrobe } from '@/context/WardrobeContext';
-import { Card, CardContent } from '@/components/ui/card';
+import { useWardrobe } from '../../../context/WardrobeContext';
+import { Card, CardContent } from '../../../components/ui/card';
 import { Calendar as CalendarIcon } from 'lucide-react';
-import { Calendar } from '@/components/ui/calendar';
+import { Calendar } from '../../../components/ui/calendar';
 import {
   Dialog,
   DialogContent,
@@ -12,12 +12,12 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+} from '../../../components/ui/dialog';
+import { Button } from '../../../components/ui/button';
 import { format } from 'date-fns';
 import Image from 'next/image';
-import type { Outfit } from '@/lib/types';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import type { Outfit } from '../../../lib/types';
+import { ScrollArea } from '../../../components/ui/scroll-area';
 
 export default function CalendarPage() {
   const { outfits } = useWardrobe();

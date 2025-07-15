@@ -1,8 +1,8 @@
 "use client";
 
-import { useWardrobe } from "@/context/WardrobeContext";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useWardrobe } from "../../../context/WardrobeContext";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../../components/ui/card";
+import { Button } from "../../../components/ui/button";
 import Image from 'next/image';
 import Link from 'next/link';
 import { Plus, Pin, PinOff } from "lucide-react";
@@ -11,7 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "../../../components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 
 export default function OutfitsPage() {

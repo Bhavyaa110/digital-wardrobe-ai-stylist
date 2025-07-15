@@ -1,38 +1,31 @@
 "use client";
 
-import { useWardrobe } from "@/context/WardrobeContext";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Image from 'next/image';
-import Link from 'next/link';
+import { useWardrobe } from "../../context/WardrobeContext";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
 import { PlusCircle, Sparkles, Swords, ArrowRight } from "lucide-react";
-import { useState } from "react";
 
 export default function DashboardPage() {
   const { outfits } = useWardrobe();
   const pinnedOutfits = outfits.filter((o) => o.pinned);
 
-  const [photoDataUri, setPhotoDataUri] = useState('');
-  const [outputImage, setOutputImage] = useState('');
-
-  const isServer = typeof window === 'undefined';
-
-  const remover = isServer
-    ? require('@/ai/flows/clothing-item-background-removal')
-    : require('@/ai/flows/clothing-item-background-removal.client');
-
-  const { clothingItemBackgroundRemoval } = remover;
-
-  const handleBackgroundRemoval = async () => {
-    const result = await clothingItemBackgroundRemoval({ photoDataUri });
-    setOutputImage(result.processedPhotoDataUri);
-  };
-
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold font-headline">Welcome back, Jane!</h1>
-        <p className="text-muted-foreground">Here's your style summary and quick actions.</p>
+        <h1 className="text-3xl font-bold font-headline">
+          Welcome back, Jane!
+        </h1>
+        <p className="text-muted-foreground">
+          Here's your style summary and quick actions.
+        </p>
       </div>
 
       {/* Quick Actions Section */}
@@ -40,11 +33,15 @@ export default function DashboardPage() {
         <Link href="/closet">
           <Card className="hover:bg-card hover:shadow-soft-md hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Add to Closet</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Add to Closet
+              </CardTitle>
               <PlusCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <p className="text-xs text-muted-foreground">Upload a new clothing item to get started.</p>
+              <p className="text-xs text-muted-foreground">
+                Upload a new clothing item to get started.
+              </p>
             </CardContent>
           </Card>
         </Link>
@@ -56,7 +53,9 @@ export default function DashboardPage() {
               <Sparkles className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <p className="text-xs text-muted-foreground">Get outfit suggestions from our AI.</p>
+              <p className="text-xs text-muted-foreground">
+                Get outfit suggestions from our AI.
+              </p>
             </CardContent>
           </Card>
         </Link>
@@ -68,31 +67,12 @@ export default function DashboardPage() {
               <Swords className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <p className="text-xs text-muted-foreground">Create your own outfits manually.</p>
+              <p className="text-xs text-muted-foreground">
+                Create your own outfits manually.
+              </p>
             </CardContent>
           </Card>
         </Link>
-      </div>
-
-      {/* AI Background Removal Section */}
-      <div>
-        <h2 className="text-2xl font-bold mb-2">AI Background Remover</h2>
-        <div className="bg-card p-6 rounded-xl border space-y-4">
-          <input
-            type="text"
-            className="w-full border p-2 rounded"
-            placeholder="Paste clothing item Data URI here"
-            value={photoDataUri}
-            onChange={(e) => setPhotoDataUri(e.target.value)}
-          />
-          <Button onClick={handleBackgroundRemoval}>Remove Background</Button>
-          {outputImage && (
-            <div>
-              <h3 className="font-semibold mb-1">Result</h3>
-              <img src={outputImage} alt="Processed" className="border max-w-full h-auto" />
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Pinned Outfits Section */}
@@ -112,18 +92,27 @@ export default function DashboardPage() {
               <Card key={outfit.id} className="overflow-hidden group">
                 <CardContent className="p-0">
                   <div className="grid grid-cols-2 grid-rows-2 aspect-square">
-                    {outfit.items.slice(0, 4).map((item) => (
-                      <div key={item.id} className="relative overflow-hidden">
-                        <Image
-                          src={item.imageUrl}
-                          alt={item.name}
-                          width={200}
-                          height={200}
-                          data-ai-hint={item['data-ai-hint']}
-                          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                        />
-                      </div>
-                    ))}
+                    {outfit.items
+                      .slice(0, 4)
+                      .map(
+                        (item: {
+                          id: string;
+                          imageUrl: string;
+                          name: string;
+                        }) => (
+                          <div
+                            key={item.id}
+                            className="relative overflow-hidden"
+                          >
+                            <Image
+                              src={item.imageUrl}
+                              alt={item.name}
+                              width={200}
+                              height={200}
+                            />
+                          </div>
+                        )
+                      )}
                     {outfit.items.length < 4 &&
                       [...Array(4 - outfit.items.length)].map((_, i) => (
                         <div key={i} className="bg-secondary"></div>

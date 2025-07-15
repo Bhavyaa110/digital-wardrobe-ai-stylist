@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useWardrobe } from "@/context/WardrobeContext";
-import { Card, CardContent } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useWardrobe } from "../../context/WardrobeContext";
+import { Card, CardContent } from "../../components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
 import Image from "next/image";
 import { AddClothingItemForm } from "./AddClothingItemForm";
 import { Plus, Trash2, Pin, PinOff } from 'lucide-react';
@@ -15,7 +15,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "../../components/ui/dropdown-menu"
 import { MoreHorizontal } from "lucide-react";
 
 

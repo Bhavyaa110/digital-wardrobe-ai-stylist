@@ -12,7 +12,7 @@ import {
   SidebarTrigger,
   SidebarGroup,
   SidebarGroupLabel
-} from "@/components/ui/sidebar";
+} from "./ui/sidebar";
 import {
   LayoutDashboard,
   Shirt,

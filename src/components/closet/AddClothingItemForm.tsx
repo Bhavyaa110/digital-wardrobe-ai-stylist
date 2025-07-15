@@ -4,23 +4,23 @@ import { useState, useRef, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useWardrobe } from '@/context/WardrobeContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useToast } from '@/hooks/use-toast';
-import { clothingItemBackgroundRemoval } from '@/ai/flows/clothing-item-background-removal';
-import { tagClothingItem } from '@/ai/flows/tag-clothing-item';
+import { useWardrobe } from '../../context/WardrobeContext';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '../../components/ui/sheet';
+import { ScrollArea } from '../../components/ui/scroll-area';
+import { useToast } from '../../hooks/use-toast';
+import { clothingItemBackgroundRemoval } from '../../ai/flows/clothing-item-background-removal';
+import { tagClothingItem } from '../../ai/flows/tag-clothing-item';
 import { Loader2, UploadCloud, Wand2, Camera, FlipHorizontal } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '../ui/badge';
-import type { Category, Occasion, Season } from '@/lib/types';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { cn } from '@/lib/utils';
+import type { Category, Occasion, Season } from '../../lib/types';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/ui/tabs";
+import { Alert, AlertTitle, AlertDescription } from '../../components/ui/alert';
+import { cn } from '../../lib/utils';
 
 
 const formSchema = z.object({

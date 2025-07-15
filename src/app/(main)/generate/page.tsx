@@ -4,18 +4,18 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useWardrobe } from '@/context/WardrobeContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { generateOutfitSuggestions } from '@/ai/flows/generate-outfit-suggestions';
+import { useWardrobe } from '../../../context/WardrobeContext';
+import { Button } from '../../../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../../../components/ui/card';
+import { Input } from '../../../components/ui/input';
+import { Label } from '../../../components/ui/label';
+import { useToast } from '../../../hooks/use-toast';
+import { generateOutfitSuggestions } from '../../../ai/flows/generate-outfit-suggestions';
 import { Loader2, Sparkles, Wand2 } from 'lucide-react';
 import Image from 'next/image';
-import type { Outfit } from '@/lib/types';
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from "@/components/ui/checkbox"
+import type { Outfit } from '../../../lib/types';
+import { Badge } from '../../../components/ui/badge';
+import { Checkbox } from "../../../components/ui/checkbox"
 
 const formSchema = z.object({
   occasion: z.string().min(1, 'Occasion is required'),

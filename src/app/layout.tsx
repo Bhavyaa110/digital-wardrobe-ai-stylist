@@ -1,7 +1,7 @@
 import type {Metadata} from 'next';
 import './globals.css';
-import { Toaster } from "@/components/ui/toaster"
-import { WardrobeProvider } from '@/context/WardrobeContext';
+import { Toaster } from "../components/ui/toaster"
+import { WardrobeProvider } from '../context/WardrobeContext';
 
 export const metadata: Metadata = {
   title: 'Fitzy Wardrobe',

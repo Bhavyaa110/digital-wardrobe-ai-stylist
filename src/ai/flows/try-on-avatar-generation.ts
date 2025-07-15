@@ -7,8 +7,8 @@
  * - TryOnAvatarGenerationOutput - The return type for the tryOnAvatarGeneration function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@genkit-ai/core';
+import { z } from 'genkit';
 
 const TryOnAvatarGenerationInputSchema = z.object({
   avatarDataUri: z

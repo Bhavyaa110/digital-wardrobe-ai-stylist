@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from 'react';
-import { useWardrobe } from '@/context/WardrobeContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
-import { aiAvatarTryOn } from '@/ai/flows/ai-avatar-try-on';
+import { useWardrobe } from '../../../context/WardrobeContext';
+import { Button } from '../../../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../../components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select';
+import { useToast } from '../../../hooks/use-toast';
+import { aiAvatarTryOn } from '../../../ai/flows/ai-avatar-try-on';
 import { Loader2, PersonStanding, Sparkles } from 'lucide-react';
 import Image from 'next/image';
-import type { ClothingItem } from '@/lib/types';
+import type { ClothingItem } from '../../../lib/types';
 
 export default function TryOnPage() {
   const { clothingItems } = useWardrobe();

@@ -2,8 +2,7 @@
 /**
  * @fileOverview Flow for generating an AI avatar wearing a specified outfit.
  */
-
-import { ai } from '@/ai/genkit';
+import { ai } from '@genkit-ai/core';
 import { z } from 'genkit';
 
 // Input schema

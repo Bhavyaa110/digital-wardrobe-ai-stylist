@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AppSidebar } from "@/components/AppSidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { useWardrobe } from "@/context/WardrobeContext";
+import { AppSidebar } from "../../components/AppSidebar";
+import { SidebarProvider, SidebarTrigger } from "../../components/ui/sidebar";
+import { Button } from "../../components/ui/button";
+import { useWardrobe } from "../../context/WardrobeContext";
 import { MapPin, Sun, Cloud, CloudRain, CloudSnow } from "lucide-react";
 
 export default function MainLayout({
