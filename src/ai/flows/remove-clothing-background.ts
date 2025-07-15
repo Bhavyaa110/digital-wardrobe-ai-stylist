@@ -7,7 +7,7 @@
  * - RemoveClothingBackgroundInput - The input type for the removeClothingBackground function.
  * - RemoveClothingBackgroundOutput - The return type for the removeClothingBackground function.
  */
-import { ai } from '@genkit-ai/core';
+import { ai } from '../genkit'; // Adjust the path as needed
 import { z } from 'genkit';
 
 const RemoveClothingBackgroundInputSchema = z.object({
@@ -62,7 +62,7 @@ const removeClothingBackgroundFlow = ai.defineFlow(
     outputSchema: RemoveClothingBackgroundOutputSchema,
   },
   async input => {
-    const {media} = await ai.generate(prompt(input));
+    const {media} = await prompt(input);
     return {processedPhotoDataUri: media!.url!};
   }
 );

@@ -1,7 +1,7 @@
 'use server';
 
-import { ai } from '@genkit-ai/core';
-import { z } from 'zod';
+import { ai } from '../genkit'; // Adjust the path as needed
+import { z } from 'genkit';
 
 const ClothingItemBackgroundRemovalInputSchema = z.object({
   photoDataUri: z.string().describe(
@@ -41,7 +41,7 @@ export const clothingItemBackgroundRemovalFlow = ai.defineFlow(
     outputSchema: ClothingItemBackgroundRemovalOutputSchema,
   },
   async (input) => {
-    const result = await ai.generate(prompt(input));
+    const result = await prompt(input);
     if (!result?.output?.processedPhotoDataUri) {
       throw new Error('AI response did not contain processedPhotoDataUri');
     }

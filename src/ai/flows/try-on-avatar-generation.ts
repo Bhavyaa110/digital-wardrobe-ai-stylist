@@ -6,8 +6,7 @@
  * - TryOnAvatarGenerationInput - The input type for the tryOnAvatarGeneration function.
  * - TryOnAvatarGenerationOutput - The return type for the tryOnAvatarGeneration function.
  */
-
-import { ai } from '@genkit-ai/core';
+import { ai } from '../genkit'; // Adjust the path as needed
 import { z } from 'genkit';
 
 const TryOnAvatarGenerationInputSchema = z.object({

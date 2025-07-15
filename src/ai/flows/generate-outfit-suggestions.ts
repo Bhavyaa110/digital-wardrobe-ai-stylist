@@ -9,7 +9,7 @@
  */
 
 'use server';
-import { ai } from '@genkit-ai/core';
+import { ai } from '../genkit'; // Adjust the path as needed
 import { z } from 'genkit';
 
 const GenerateOutfitSuggestionsInputSchema = z.object({

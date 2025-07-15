@@ -1,6 +1,7 @@
 import { genkit } from 'genkit';
 import { googleAI } from '@genkit-ai/googleai';
 
-const ai = genkit({
+export const ai = genkit({
   plugins: [googleAI()],
+  model: 'googleai/gemini-2.0-flash', // or your preferred model
 });

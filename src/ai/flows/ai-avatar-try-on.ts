@@ -2,9 +2,8 @@
 /**
  * @fileOverview Flow for generating an AI avatar wearing a specified outfit.
  */
-import { ai } from '@genkit-ai/core';
+import { ai } from '../genkit'; // Adjust the path as needed
 import { z } from 'genkit';
-
 // Input schema
 const AiAvatarTryOnInputSchema = z.object({
   avatarDataUri: z.string().describe(
