@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import type { ClothingItem, Outfit, Category, Season, Occasion, WeatherInfo } from '@/lib/types';
+import type { ClothingItem, Outfit, Category, Season, Occasion, WeatherInfo } from '../lib/types';
 
 interface WardrobeContextType {
   clothingItems: ClothingItem[];
