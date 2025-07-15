@@ -5,7 +5,7 @@ import { z } from 'genkit';
 
 const ClothingItemBackgroundRemovalInputSchema = z.object({
   photoDataUri: z.string().describe(
-    "A photo of a clothing item, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+    "A photo of a clothing item, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
   ),
 });
 export type ClothingItemBackgroundRemovalInput = z.infer<typeof ClothingItemBackgroundRemovalInputSchema>;
@@ -48,7 +48,6 @@ const clothingItemBackgroundRemovalFlow = ai.defineFlow(
   async (input) => {
     const result = await ai.generate(prompt(input));
 
-    // SAFELY extract the output
     if (!result?.output?.processedPhotoDataUri) {
       throw new Error('AI response did not contain processedPhotoDataUri');
     }
