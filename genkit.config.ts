@@ -1,6 +1,6 @@
-import { defineConfig } from 'genkit';
+import { configureGenkit } from '@genkit-ai/core';
 import { googleAI } from '@genkit-ai/googleai';
 
-export default defineConfig({
+configureGenkit({
   plugins: [googleAI()],
 });
