@@ -170,7 +170,7 @@ export default function CalendarPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Plan outfit for {selectedDate ? format(selectedDate, "PPP") : ""}
+              Plan outfit for {selectedDate ? format(selectedDate, "PPP") : "a selected day"}
             </DialogTitle>
             <DialogDescription>
               Select one of your saved outfits for this day.
