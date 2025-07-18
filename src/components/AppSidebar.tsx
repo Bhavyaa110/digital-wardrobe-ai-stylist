@@ -1,5 +1,5 @@
 
-"use client";
+'use client';
 
 import {
   Sidebar,
@@ -28,7 +28,7 @@ import {
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "./ui/button";
-
+import { useAuth } from '../context/AuthContext';
 const menuItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/closet", label: "My Closet", icon: Shirt },
@@ -45,7 +45,8 @@ const tools = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-
+  const { user } = useAuth();
+  
   return (
     <Sidebar>
       <SidebarHeader>
@@ -99,7 +100,7 @@ export function AppSidebar() {
                 <Link href="/login">
                     <SidebarMenuButton tooltip="User Profile">
                         <CircleUserRound/>
-                        <span>Jane Doe</span>
+                        <span>{user?.name || 'Login'}</span>
                     </SidebarMenuButton>
                 </Link>
              </SidebarMenuItem>

@@ -12,16 +12,17 @@ import { Button } from "../../components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { PlusCircle, Sparkles, Swords, ArrowRight } from "lucide-react";
-
+import { useAuth } from "../../context/AuthContext";
 export default function DashboardPage() {
   const { outfits } = useWardrobe();
+  const { user } = useAuth();
   const pinnedOutfits = outfits.filter((o) => o.pinned);
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold font-headline">
-          Welcome back, Jane!
+          Welcome back, {user?.name || "Cutie"}!
         </h1>
         <p className="text-muted-foreground">
           Here's your style summary and quick actions.
