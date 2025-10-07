@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-import { ai } from '@genkit-ai/core';
-import { z } from 'zod';
-=======
 'use server';
-
-import { ai } from '../genkit'; // Adjust the path as needed
-import { z } from 'genkit';
->>>>>>> 0fd291241d343f0f7709aa18becfb1eb1d560603
+import { ai } from '../genkit'; // Adjust the path if your project exposes ai elsewhere
+import { z } from 'zod';
 
 const ClothingItemBackgroundRemovalInputSchema = z.object({
   photoDataUri: z.string().describe(
@@ -31,28 +25,27 @@ export const clothingItemBackgroundRemovalFlow = ai.defineFlow(
     outputSchema: ClothingItemBackgroundRemovalOutputSchema,
   },
   async (input) => {
-<<<<<<< HEAD
-    // Use ai.invoke (or ai.run) for AI model request
-    const result = await ai.invoke({
+    // Single AI invocation
+    const { media } = await ai.generate({
       model: 'googleai/gemini-pro-vision',
-      input: [
+      prompt: [
         { media: { url: input.photoDataUri } },
         { text: 'Please remove the background and return the image as a data URI.' },
       ],
       config: {
-        responseModalities: ['TEXT', 'IMAGE'],
+        responseModalities: ['IMAGE', 'TEXT'],
       },
     });
 
-=======
-    const result = await prompt(input);
->>>>>>> 0fd291241d343f0f7709aa18becfb1eb1d560603
-    if (!result?.output?.processedPhotoDataUri) {
-      throw new Error('AI response did not contain processedPhotoDataUri');
+    // Extract the processed photo data URI from the response
+    const processedPhotoDataUri = media?.url;
+
+    if (!processedPhotoDataUri) {
+      throw new Error('AI response did not contain a processed image data URI.');
     }
 
     return {
-      processedPhotoDataUri: result.output.processedPhotoDataUri,
+      processedPhotoDataUri,
     };
   }
 );

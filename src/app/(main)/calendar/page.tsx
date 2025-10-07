@@ -18,7 +18,6 @@ import { format } from "date-fns";
 import Image from "next/image";
 import type { Outfit } from "../../../lib/types";
 import { ScrollArea } from "../../../components/ui/scroll-area";
-import { CaptionProps } from "react-day-picker";
 
 export default function CalendarPage() {
   const { outfits } = useWardrobe();
@@ -47,8 +46,8 @@ export default function CalendarPage() {
   };
 
   // ✅ Safe goToMonth access with fallback
-  const CustomCaption = (props: CaptionProps) => {
-    const { displayMonth } = props;
+  const CustomCaption = (props: any) => {
+    const { calendarMonth } = props as { calendarMonth: Date };
     const goToMonth = (props as any).goToMonth as ((date: Date) => void) | undefined;
 
     return (
@@ -56,7 +55,7 @@ export default function CalendarPage() {
         <button
           type="button"
           onClick={() =>
-            goToMonth?.(new Date(displayMonth.getFullYear(), displayMonth.getMonth() - 1))
+            goToMonth?.(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1))
           }
           className="text-muted-foreground hover:text-foreground"
         >
@@ -64,13 +63,13 @@ export default function CalendarPage() {
         </button>
 
         <div className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold">
-          {format(displayMonth, "LLLL yyyy")}
+          {format(calendarMonth, "LLLL yyyy")}
         </div>
 
         <button
           type="button"
           onClick={() =>
-            goToMonth?.(new Date(displayMonth.getFullYear(), displayMonth.getMonth() + 1))
+            goToMonth?.(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1))
           }
           className="text-muted-foreground hover:text-foreground"
         >
@@ -100,11 +99,12 @@ export default function CalendarPage() {
               mode="single"
               selected={selectedDate}
               onSelect={handleDayClick}
-              captionLayout="buttons"
+              captionLayout="label"
               className="w-full"
               components={{
-                Caption: CustomCaption,
-                DayContent: ({ date }) => {
+                CaptionLabel: CustomCaption,
+                Day: (props: any) => {
+                  const { date } = props;
                   const outfit = getOutfitForDate(date);
                   return (
                     <div className="relative h-full w-full flex items-center justify-center">
@@ -186,21 +186,26 @@ export default function CalendarPage() {
                   onClick={() => handleSelectOutfit(outfit.id)}
                 >
                   <Card className="group overflow-hidden">
-<<<<<<< HEAD
                     <div className="grid grid-cols-2 grid-rows-1 aspect-video bg-secondary">
-                        {outfit.items.slice(0, 4).map((item: import('../../../lib/types').ClothingItem) => (
+                      {outfit.items.slice(0, 4).map((item: import('../../../lib/types').ClothingItem) => (
                           <div key={item.id} className="relative overflow-hidden border-2 border-background">
-                            <Image
-                              src={item.imageUrl}
-                              alt={item.name}
-                              width={200}
-                              height={200}
-                              data-ai-hint={item['data-ai-hint']}
-                              className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                            />
+                            {(() => {
+                              const aiHint = (item as any)['data-ai-hint'] as string | undefined;
+                              return (
+                                <Image
+                                  src={item.imageUrl}
+                                  alt={item.name}
+                                  width={200}
+                                  height={200}
+                                  // pass data attribute safely
+                                  {...(aiHint ? { ['data-ai-hint']: aiHint } : {})}
+                                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                                />
+                              );
+                            })()}
                           </div>
                         ))}
-=======
+                    </div>
                     <div className="grid grid-cols-2 aspect-video bg-secondary">
                       {outfit.items.slice(0, 2).map((item) => (
                         <div
@@ -216,7 +221,6 @@ export default function CalendarPage() {
                           />
                         </div>
                       ))}
->>>>>>> 0fd291241d343f0f7709aa18becfb1eb1d560603
                     </div>
                     <div className="p-2 border-t">
                       <h4 className="text-sm font-semibold truncate">
