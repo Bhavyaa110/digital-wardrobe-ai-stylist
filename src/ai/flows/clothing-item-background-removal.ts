@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 import { ai } from '@genkit-ai/core';
 import { z } from 'zod';
+=======
+'use server';
+
+import { ai } from '../genkit'; // Adjust the path as needed
+import { z } from 'genkit';
+>>>>>>> 0fd291241d343f0f7709aa18becfb1eb1d560603
 
 const ClothingItemBackgroundRemovalInputSchema = z.object({
   photoDataUri: z.string().describe(
@@ -24,6 +31,7 @@ export const clothingItemBackgroundRemovalFlow = ai.defineFlow(
     outputSchema: ClothingItemBackgroundRemovalOutputSchema,
   },
   async (input) => {
+<<<<<<< HEAD
     // Use ai.invoke (or ai.run) for AI model request
     const result = await ai.invoke({
       model: 'googleai/gemini-pro-vision',
@@ -36,6 +44,9 @@ export const clothingItemBackgroundRemovalFlow = ai.defineFlow(
       },
     });
 
+=======
+    const result = await prompt(input);
+>>>>>>> 0fd291241d343f0f7709aa18becfb1eb1d560603
     if (!result?.output?.processedPhotoDataUri) {
       throw new Error('AI response did not contain processedPhotoDataUri');
     }

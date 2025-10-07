@@ -99,7 +99,7 @@ export function ClothingList() {
                   <h3 className="font-semibold truncate">{item.name}</h3>
                   <p className="text-sm text-muted-foreground">{item.brand}</p>
                    <div className="mt-2 flex flex-wrap gap-1">
-                        {item.styleTags.slice(0,2).map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                        {item.styleTags.slice(0,2).map((tag: string) => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                    </div>
                 </div>
               </CardContent>
