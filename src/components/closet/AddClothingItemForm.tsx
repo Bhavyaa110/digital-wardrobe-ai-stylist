@@ -328,7 +328,7 @@ export function AddClothingItemForm({ open, onOpenChange }: AddClothingItemFormP
                     {styleTags.length > 0 && <div className="space-y-2">
                         <Label className="text-xs">Style Tags</Label>
                         <div className="flex flex-wrap gap-2">
-                            {styleTags.map(tag => <Badge key={tag}>{tag}</Badge>)}
+                            {styleTags.slice(0,2).map((tag: string) => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                         </div>
                     </div>}
                      {moodTags.length > 0 && <div className="space-y-2">

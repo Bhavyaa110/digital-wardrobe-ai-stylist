@@ -1,5 +1,3 @@
-'use server';
-
 import { ai } from '@genkit-ai/core';
 import { z } from 'zod';
 
@@ -18,22 +16,7 @@ const ClothingItemBackgroundRemovalOutputSchema = z.object({
 export type ClothingItemBackgroundRemovalInput = z.infer<typeof ClothingItemBackgroundRemovalInputSchema>;
 export type ClothingItemBackgroundRemovalOutput = z.infer<typeof ClothingItemBackgroundRemovalOutputSchema>;
 
-const prompt = ai.definePrompt({
-  name: 'clothingItemBackgroundRemovalPrompt',
-  input: { schema: ClothingItemBackgroundRemovalInputSchema },
-  output: { schema: ClothingItemBackgroundRemovalOutputSchema },
-  prompt: [
-    { media: { url: '{{{photoDataUri}}}' } },
-    { text: 'Please remove the background and return the image as a data URI.' },
-  ],
-  model: 'googleai/gemini-pro-vision',
-  config: {
-    responseModalities: ['TEXT', 'IMAGE'],
-  },
-});
-export async function clothingItemBackgroundRemoval(input: ClothingItemBackgroundRemovalInput) {
-  return await clothingItemBackgroundRemovalFlow(input);
-}
+// Define the flow directly
 export const clothingItemBackgroundRemovalFlow = ai.defineFlow(
   {
     name: 'clothingItemBackgroundRemovalFlow',
@@ -41,12 +24,28 @@ export const clothingItemBackgroundRemovalFlow = ai.defineFlow(
     outputSchema: ClothingItemBackgroundRemovalOutputSchema,
   },
   async (input) => {
-    const result = await ai.generate(prompt(input));
+    // Use ai.invoke (or ai.run) for AI model request
+    const result = await ai.invoke({
+      model: 'googleai/gemini-pro-vision',
+      input: [
+        { media: { url: input.photoDataUri } },
+        { text: 'Please remove the background and return the image as a data URI.' },
+      ],
+      config: {
+        responseModalities: ['TEXT', 'IMAGE'],
+      },
+    });
+
     if (!result?.output?.processedPhotoDataUri) {
       throw new Error('AI response did not contain processedPhotoDataUri');
     }
+
     return {
       processedPhotoDataUri: result.output.processedPhotoDataUri,
     };
   }
 );
+
+export async function clothingItemBackgroundRemoval(input: ClothingItemBackgroundRemovalInput) {
+  return await clothingItemBackgroundRemovalFlow(input);
+}

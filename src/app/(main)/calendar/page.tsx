@@ -101,17 +101,17 @@ export default function CalendarPage() {
                 <div key={outfit.id} className="cursor-pointer" onClick={() => handleSelectOutfit(outfit.id)}>
                   <Card className="group overflow-hidden">
                     <div className="grid grid-cols-2 grid-rows-1 aspect-video bg-secondary">
-                        {outfit.items.slice(0, 2).map(item => (
-                             <div key={item.id} className="relative overflow-hidden border-2 border-background">
-                                <Image
-                                    src={item.imageUrl}
-                                    alt={item.name}
-                                    data-ai-hint={item['data-ai-hint']}
-                                    width={100}
-                                    height={100}
-                                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                                />
-                             </div>
+                        {outfit.items.slice(0, 4).map((item: import('../../../lib/types').ClothingItem) => (
+                          <div key={item.id} className="relative overflow-hidden border-2 border-background">
+                            <Image
+                              src={item.imageUrl}
+                              alt={item.name}
+                              width={200}
+                              height={200}
+                              data-ai-hint={item['data-ai-hint']}
+                              className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                            />
+                          </div>
                         ))}
                     </div>
                     <div className="p-2 border-t">
