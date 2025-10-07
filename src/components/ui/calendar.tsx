@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { cn } from "../../lib/utils";
-import { buttonVariants } from "../../components/ui/button";
+import { buttonVariants } from "./button";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -15,10 +15,26 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+  // Define icon components and cast to DayPicker components to satisfy TypeScript
+  const customComponents = {
+    IconLeft: ({
+      className,
+      ...iconProps
+    }: { className?: string } & React.ComponentProps<"svg">) => (
+      <ChevronLeft className={cn("h-4 w-4", className)} {...(iconProps as any)} />
+    ),
+    IconRight: ({
+      className,
+      ...iconProps
+    }: { className?: string } & React.ComponentProps<"svg">) => (
+      <ChevronRight className={cn("h-4 w-4", className)} {...(iconProps as any)} />
+    ),
+  } as unknown as React.ComponentProps<typeof DayPicker>["components"];
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      captionLayout="buttons"
+      captionLayout="label"
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
@@ -52,16 +68,9 @@ function Calendar({
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
-        ...classNames,
+        ...(classNames ?? {}),
       }}
-      components={{
-        IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn("h-4 w-4", className)} {...props} />
-        ),
-        IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn("h-4 w-4", className)} {...props} />
-        ),
-      }}
+      components={customComponents}
       {...props}
     />
   );
