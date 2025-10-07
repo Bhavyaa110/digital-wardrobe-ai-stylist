@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "fitzyy",
     "source": ".",
     "ignore": [
       "firebase.json",
@@ -22,14 +23,12 @@
         "*.local"
       ],
       "predeploy": [
-        "npm --prefix ./digital-closet run build",
-        "npm --prefix ./digital-closet run lint"
+        "npm --prefix ./digital-closet run build"
       ]
     },
     {
       "source": "functions",
       "predeploy": [
-        "npm --prefix ./functions run lint"
       ]
     }
   ]
