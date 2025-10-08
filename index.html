@@ -84,6 +84,20 @@
           loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
         }
       });
+
+      // New: detect common extension-injected script names (e.g. "chext") and log a friendly note.
+      (function detectExtensionInjectedScripts(){
+        try {
+          const scripts = Array.from(document.scripts).map(s => s.src).filter(Boolean);
+          const extScript = scripts.find(src => /chext|chext_driver|chext_loader/i.test(src));
+          if (extScript) {
+            console.info('Note: Detected an extension-injected script:', extScript);
+            console.info('This message originates from a browser extension (e.g., Chext). It is not an error from Vercel or this site. To confirm, open an Incognito window (extensions disabled) or disable extensions and reload.');
+          }
+        } catch (e) {
+          // silent fail
+        }
+      })();
     </script>
   </body>
 </html>
