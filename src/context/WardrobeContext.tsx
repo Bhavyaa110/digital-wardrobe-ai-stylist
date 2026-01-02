@@ -1,7 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import type { ClothingItem, Outfit, Category, Season, Occasion, WeatherInfo } from '../lib/types';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import type { ClothingItem, Outfit, WeatherInfo } from '../lib/types';
 
 interface WardrobeContextType {
   clothingItems: ClothingItem[];
@@ -21,97 +21,171 @@ interface WardrobeContextType {
 
 const WardrobeContext = createContext<WardrobeContextType | undefined>(undefined);
 
-const initialClothingItems: ClothingItem[] = [
-  {
-    id: '1',
-    name: 'Classic White Tee',
-    category: 'Tops',
-    color: 'White',
-    brand: 'Everlane',
-    season: 'All-Season',
-    fabric: 'Cotton',
-    occasion: 'Casual',
-    imageUrl: 'https://placehold.co/400x400.png',
-    'data-ai-hint': 'white t-shirt',
-    styleTags: ['minimalist', 'classic'],
-    moodTags: ['relaxed', 'comfortable'],
-    pinned: false,
-  },
-  {
-    id: '2',
-    name: 'Blue Denim Jeans',
-    category: 'Bottoms',
-    color: 'Blue',
-    brand: 'Levi\'s',
-    season: 'All-Season',
-    fabric: 'Denim',
-    occasion: 'Casual',
-    imageUrl: 'https://placehold.co/400x400.png',
-    'data-ai-hint': 'blue jeans',
-    styleTags: ['streetwear', 'classic'],
-    moodTags: ['confident', 'versatile'],
-    pinned: false,
-  },
-  {
-    id: '3',
-    name: 'Black Leather Jacket',
-    category: 'Outerwear',
-    color: 'Black',
-    brand: 'AllSaints',
-    season: 'Autumn',
-    fabric: 'Leather',
-    occasion: 'Party',
-    imageUrl: 'https://placehold.co/400x400.png',
-    'data-ai-hint': 'leather jacket',
-    styleTags: ['edgy', 'cool'],
-    moodTags: ['bold', 'adventurous'],
-    pinned: true,
-  },
-  {
-    id: '4',
-    name: 'White Sneakers',
-    category: 'Footwear',
-    color: 'White',
-    brand: 'Adidas',
-    season: 'All-Season',
-    fabric: 'Canvas',
-    occasion: 'Casual',
-    imageUrl: 'https://placehold.co/400x400.png',
-    'data-ai-hint': 'white sneakers',
-    styleTags: ['sporty', 'minimalist'],
-    moodTags: ['energetic', 'youthful'],
-    pinned: false,
-  },
-];
-
-const initialOutfits: Outfit[] = [
-    {
-        id: 'o1',
-        name: 'Weekend Casual',
-        occasion: 'Casual',
-        items: [initialClothingItems[0], initialClothingItems[1], initialClothingItems[3]],
-        pinned: true,
-    },
-    {
-        id: 'o2',
-        name: 'Night Out',
-        occasion: 'Party',
-        items: [initialClothingItems[2], initialClothingItems[1]],
-        pinned: true,
-    }
-];
-
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
 export const WardrobeProvider = ({ children }: { children: ReactNode }) => {
-  const [clothingItems, setClothingItems] = useState<ClothingItem[]>(initialClothingItems);
-  const [outfits, setOutfits] = useState<Outfit[]>(initialOutfits);
+  // start with empty arrays; we'll load from DB
+  const [clothingItems, setClothingItems] = useState<ClothingItem[]>([]);
+  const [outfits, setOutfits] = useState<Outfit[]>([]);
   const [weatherInfo, setWeatherInfo] = useState<WeatherInfo | null>(null);
 
-  const addClothingItem = (item: Omit<ClothingItem, 'id' | 'pinned'>) => {
-    setClothingItems(prev => [...prev, { ...item, id: Date.now().toString(), pinned: false }]);
+  // Load from API on mount
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const [itemsRes, outfitsRes] = await Promise.all([
+          fetch('/api/closet/items').then(r => r.json()),
+          fetch('/api/outfits').then(r => r.json()),
+        ]);
+
+        if (!mounted) return;
+
+        // itemsRes may be array or {error}
+        if (Array.isArray(itemsRes)) {
+          // map DB rows to app types
+          const mappedItems: ClothingItem[] = itemsRes.map((r: any) => ({
+            id: String(r.id),
+            name: r.name,
+            category: r.category,
+            color: r.color ?? '',
+            brand: r.brand ?? '',
+            season: r.season ?? 'All-Season',
+            fabric: r.fabric ?? '',
+            occasion: r.occasion ?? 'Casual',
+            imageUrl: r.image_url || r.imageUrl || '',
+            'data-ai-hint': r.data_ai_hint || r['data-ai-hint'] || '',
+            styleTags: r.style_tags || [],
+            moodTags: r.mood_tags || [],
+            pinned: Boolean(r.pinned),
+          }));
+          setClothingItems(mappedItems);
+        } else {
+          console.error('Failed to load clothing items:', itemsRes);
+        }
+
+        if (Array.isArray(outfitsRes)) {
+          const mappedOutfits: Outfit[] = outfitsRes.map((o: any) => ({
+            id: String(o.id),
+            name: o.name,
+            occasion: o.occasion || 'Casual',
+            items: (o.items || []).map((it: any) => ({
+              id: String(it.id ?? it.itemId ?? it.id),
+              name: it.name ?? '',
+              category: it.category ?? 'Tops',
+              color: it.color ?? '',
+              brand: it.brand ?? '',
+              season: it.season ?? 'All-Season',
+              fabric: it.fabric ?? '',
+              occasion: it.occasion ?? 'Casual',
+              imageUrl: it.image_url ?? it.imageUrl ?? '',
+              'data-ai-hint': it.data_ai_hint ?? it['data-ai-hint'] ?? '',
+              styleTags: it.style_tags ?? it.styleTags ?? [],
+              moodTags: it.mood_tags ?? it.moodTags ?? [],
+              pinned: Boolean(it.pinned ?? false),
+            })),
+            pinned: Boolean(o.pinned),
+          }));
+          setOutfits(mappedOutfits);
+        } else {
+          console.error('Failed to load outfits:', outfitsRes);
+        }
+      } catch (err) {
+        console.error('Error loading wardrobe data:', err);
+      }
+    }
+    load();
+    return () => { mounted = false; };
+  }, []);
+
+  // Create item via API and update local state
+  const addClothingItem = async (item: Omit<ClothingItem, 'id' | 'pinned'>) => {
+    try {
+      const body = {
+        ...item,
+        imageUrl: item.imageUrl,
+        'data-ai-hint': (item as any)['data-ai-hint'] || undefined,
+        styleTags: item.styleTags || [],
+        moodTags: item.moodTags || [],
+      };
+      const res = await fetch('/api/closet/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (res.ok && data?.item) {
+        // map created item to ClothingItem
+        const created = data.item;
+        const mapped: ClothingItem = {
+          id: String(created.id),
+          name: created.name,
+          category: created.category,
+          color: created.color ?? '',
+          brand: created.brand ?? '',
+          season: created.season ?? 'All-Season',
+          fabric: created.fabric ?? '',
+          occasion: created.occasion ?? 'Casual',
+          imageUrl: created.image_url || created.imageUrl || '',
+          'data-ai-hint': created.data_ai_hint || created['data-ai-hint'] || '',
+          styleTags: created.style_tags || [],
+          moodTags: created.mood_tags || [],
+          pinned: Boolean(created.pinned),
+        };
+        setClothingItems(prev => [mapped, ...prev]);
+      } else {
+        console.error('Add item failed:', data);
+      }
+    } catch (err) {
+      console.error('Add clothing item error:', err);
+    }
   };
 
+  // Create outfit via API
+  const createOutfit = async (outfit: Omit<Outfit, 'id' | 'pinned'>) => {
+    try {
+      const body = {
+        name: outfit.name,
+        occasion: outfit.occasion,
+        items: outfit.items, // send item snapshots (the UI uses full item objects)
+      };
+      const res = await fetch('/api/outfits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (res.ok && data?.outfit) {
+        const created = data.outfit;
+        const mapped: Outfit = {
+          id: String(created.id),
+          name: created.name,
+          occasion: created.occasion ?? 'Casual',
+          items: (created.items || []).map((it: any) => ({
+            id: String(it.id ?? it.itemId ?? it.id),
+            name: it.name ?? '',
+            category: it.category ?? 'Tops',
+            color: it.color ?? '',
+            brand: it.brand ?? '',
+            season: it.season ?? 'All-Season',
+            fabric: it.fabric ?? '',
+            occasion: it.occasion ?? 'Casual',
+            imageUrl: it.image_url ?? it.imageUrl ?? '',
+            'data-ai-hint': it.data_ai_hint ?? it['data-ai-hint'] ?? '',
+            styleTags: it.style_tags ?? it.styleTags ?? [],
+            moodTags: it.mood_tags ?? it.moodTags ?? [],
+            pinned: Boolean(it.pinned ?? false),
+          })),
+          pinned: Boolean(created.pinned),
+        };
+        setOutfits(prev => [mapped, ...prev]);
+      } else {
+        console.error('Create outfit failed:', data);
+      }
+    } catch (err) {
+      console.error('Create outfit error:', err);
+    }
+  };
+
+  // Local update/delete (TODO: wire to DB PUT/DELETE endpoints as needed)
   const updateClothingItem = (updatedItem: ClothingItem) => {
     setClothingItems(prev => prev.map(item => item.id === updatedItem.id ? updatedItem : item));
   };
@@ -120,13 +194,9 @@ export const WardrobeProvider = ({ children }: { children: ReactNode }) => {
     setClothingItems(prev => prev.filter(item => item.id !== itemId));
   };
 
-  const createOutfit = (outfit: Omit<Outfit, 'id' | 'pinned'>) => {
-    setOutfits(prev => [...prev, { ...outfit, id: Date.now().toString(), pinned: false }]);
-  };
-
   const updateOutfit = (updatedOutfit: Outfit) => {
-    setOutfits(prev => prev.map(outfit => outfit.id === updatedOutfit.id ? updatedOutfit : outfit));
-  }
+    setOutfits(prev => prev.map(o => o.id === updatedOutfit.id ? updatedOutfit : o));
+  };
 
   const getOutfitById = (id: string) => outfits.find(o => o.id === id);
 
@@ -134,19 +204,32 @@ export const WardrobeProvider = ({ children }: { children: ReactNode }) => {
 
   const allStyleTags = React.useMemo(() => {
     const tags = new Set<string>();
-    clothingItems.forEach(item => item.styleTags.forEach(tag => tags.add(tag)));
+    clothingItems.forEach(item => (item.styleTags || []).forEach(tag => tags.add(tag)));
     return Array.from(tags);
   }, [clothingItems]);
 
   const allMoodTags = React.useMemo(() => {
     const tags = new Set<string>();
-    clothingItems.forEach(item => item.moodTags.forEach(tag => tags.add(tag)));
+    clothingItems.forEach(item => (item.moodTags || []).forEach(tag => tags.add(tag)));
     return Array.from(tags);
   }, [clothingItems]);
 
-
   return (
-    <WardrobeContext.Provider value={{ clothingItems, outfits, weatherInfo, setWeatherInfo, addClothingItem, updateClothingItem, removeClothingItem, createOutfit, updateOutfit, getOutfitById, getClothingItemById, allStyleTags, allMoodTags }}>
+    <WardrobeContext.Provider value={{
+      clothingItems,
+      outfits,
+      weatherInfo,
+      setWeatherInfo,
+      addClothingItem,
+      updateClothingItem,
+      removeClothingItem,
+      createOutfit,
+      updateOutfit,
+      getOutfitById,
+      getClothingItemById,
+      allStyleTags,
+      allMoodTags
+    }}>
       {children}
     </WardrobeContext.Provider>
   );

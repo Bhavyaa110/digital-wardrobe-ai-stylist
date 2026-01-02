@@ -39,7 +39,9 @@ export default function CalendarPage() {
     setIsDialogOpen(false);
   };
 
-  const getOutfitForDate = (date: Date): Outfit | undefined => {
+  // make this defensive: accept unknown and return undefined for invalid inputs
+  const getOutfitForDate = (date: unknown): Outfit | undefined => {
+    if (!(date instanceof Date) || isNaN(date.getTime())) return undefined;
     const dateString = format(date, "yyyy-MM-dd");
     const outfitId = plannedOutfits[dateString];
     return outfits.find((o) => o.id === outfitId);
@@ -47,30 +49,51 @@ export default function CalendarPage() {
 
   // ✅ Safe goToMonth access with fallback
   const CustomCaption = (props: any) => {
-    const { calendarMonth } = props as { calendarMonth: Date };
-    const goToMonth = (props as any).goToMonth as ((date: Date) => void) | undefined;
+    // react-day-picker may use different prop names depending on version:
+    // try common ones: calendarMonth, month, displayMonth
+    const candidate: Date | undefined =
+      (props && (props.calendarMonth ?? props.month ?? props.displayMonth)) ?? undefined;
+
+    // Validate it's a real Date
+    const calendarMonth =
+      candidate instanceof Date && !isNaN(candidate.getTime()) ? candidate : undefined;
+
+    // goToMonth might be provided as goToMonth or as a callback prop with a different name
+    const goToMonth = (props && (props.goToMonth ?? props.onMonthChange)) as
+      | ((date: Date) => void)
+      | undefined;
+
+    // Determine a safe base date for label and navigation
+    const baseDate = calendarMonth ?? new Date();
+
+    // Format label only when baseDate is valid
+    let label = "";
+    try {
+      label = format(baseDate, "LLLL yyyy");
+    } catch {
+      label = ""; // fallback to empty if format unexpectedly fails
+    }
+
+    const prevMonth = new Date(baseDate.getFullYear(), baseDate.getMonth() - 1);
+    const nextMonth = new Date(baseDate.getFullYear(), baseDate.getMonth() + 1);
 
     return (
       <div className="relative flex items-center justify-between px-4 py-2">
         <button
           type="button"
-          onClick={() =>
-            goToMonth?.(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1))
-          }
+          onClick={() => goToMonth?.(prevMonth)}
           className="text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft />
         </button>
 
         <div className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold">
-          {format(calendarMonth, "LLLL yyyy")}
+          {label || format(new Date(), "LLLL yyyy")}
         </div>
 
         <button
           type="button"
-          onClick={() =>
-            goToMonth?.(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1))
-          }
+          onClick={() => goToMonth?.(nextMonth)}
           className="text-muted-foreground hover:text-foreground"
         >
           <ChevronRight />
@@ -104,23 +127,39 @@ export default function CalendarPage() {
               components={{
                 CaptionLabel: CustomCaption,
                 Day: (props: any) => {
-                  const { date } = props;
+                  // DayPicker places this component inside a table row (<tr>).
+                  // Return a <td> to keep valid HTML nesting, and wrap layout inside a <div>.
+                  const { date, ...dayProps } = props;
+
+                  // invalid date -> render empty cell
+                  if (!(date instanceof Date) || isNaN(date.getTime())) {
+                    return (
+                      <td {...dayProps}>
+                        <div className="relative h-full w-full flex items-center justify-center">
+                          <span className="text-muted-foreground"> </span>
+                        </div>
+                      </td>
+                    );
+                  }
+
                   const outfit = getOutfitForDate(date);
                   return (
-                    <div className="relative h-full w-full flex items-center justify-center">
-                      <span>{date.getDate()}</span>
-                      {outfit?.items?.[0] && (
-                        <div className="absolute bottom-1 right-1 w-5 h-5 rounded-full overflow-hidden border border-primary">
-                          <Image
-                            src={outfit.items[0].imageUrl}
-                            alt={outfit.items[0].name}
-                            width={20}
-                            height={20}
-                            className="object-cover"
-                          />
-                        </div>
-                      )}
-                    </div>
+                    <td {...dayProps}>
+                      <div className="relative h-full w-full flex items-center justify-center">
+                        <span>{date.getDate()}</span>
+                        {outfit?.items?.[0] && (
+                          <div className="absolute bottom-1 right-1 w-5 h-5 rounded-full overflow-hidden border border-primary">
+                            <Image
+                              src={outfit.items[0].imageUrl}
+                              alt={outfit.items[0].name}
+                              width={20}
+                              height={20}
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </td>
                   );
                 },
               }}

@@ -26,22 +26,32 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const res = await fetch('/api/auth/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, password }),
-    });
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    const data = await res.json();
+      // parse JSON safely
+      const data = await res.json().catch(() => ({} as any));
 
-    if (res.ok) {
-      console.log('Signup successful:', data);
-      router.push('/login'); // ✅ Redirect to login page
-    } else {
-      console.error('Signup failed:', data.message);
-      // You can show an error message here if needed
+      if (res.ok) {
+        console.log('Signup successful:', data);
+        router.push('/login');
+        return;
+      }
+
+      // show helpful error in dev and log
+      const msg = data?.message || data?.error || JSON.stringify(data) || 'Signup failed';
+      console.error('Signup failed:', msg);
+      // quick dev feedback (replace with UI toast if desired)
+      alert(msg);
+    } catch (networkErr) {
+      console.error('Network or unexpected error during signup:', networkErr);
+      alert('Network error. Please try again.');
     }
   };
 

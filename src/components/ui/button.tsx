@@ -40,14 +40,46 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+
+    // Only forward safe DOM attributes to avoid hydration mismatches (e.g. stray fdprocessedid).
+    const allowedKeys = new Set([
+      "type",
+      "id",
+      "name",
+      "value",
+      "disabled",
+      "title",
+      "role",
+      "tabIndex",
+      "form",
+      "formAction",
+      "formMethod",
+      "formEncType",
+      "formTarget",
+      "formNoValidate",
+      "autoFocus",
+      "aria-disabled",
+    ])
+
+    const domProps: Record<string, any> = {}
+    Object.entries(props).forEach(([key, val]) => {
+      if (key === "className") return // handled separately
+      if (key === "children") return
+      if (key.startsWith("aria-") || key.startsWith("data-") || allowedKeys.has(key)) {
+        domProps[key] = val
+      }
+    })
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        {...props}
-      />
+        {...domProps}
+      >
+        {children}
+      </Comp>
     )
   }
 )

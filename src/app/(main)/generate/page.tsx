@@ -13,7 +13,7 @@ import { useToast } from '../../../hooks/use-toast';
 import { generateOutfitSuggestions } from '../../../ai/flows/generate-outfit-suggestions';
 import { Loader2, Sparkles, Wand2 } from 'lucide-react';
 import Image from 'next/image';
-import type { Outfit } from '../../../lib/types';
+import type { Outfit, Occasion } from '../../../lib/types';
 import { Badge } from '../../../components/ui/badge';
 import { Checkbox } from "../../../components/ui/checkbox"
 
@@ -40,6 +40,7 @@ export default function GeneratePage() {
 
   const selectedStyleTags = watch('styleTags') || [];
   const selectedMoodTags = watch('moodTags') || [];
+  const currentOccasion = watch('occasion') || 'Casual';
 
   const onSubmit = async (data: FormValues) => {
     if (!weatherInfo) {
@@ -71,7 +72,7 @@ export default function GeneratePage() {
   const handleSaveOutfit = (suggestion: string, items: any) => {
     createOutfit({
         name: suggestion,
-        occasion: 'Casual', // This should be derived from the form
+        occasion: (currentOccasion as Occasion) || ('Casual' as Occasion), // use form occasion
         items: items,
     });
     toast({ title: 'Outfit Saved!', description: `${suggestion} has been added to your outfits.` });
@@ -105,8 +106,10 @@ export default function GeneratePage() {
                                     id={`style-${tag}`}
                                     checked={selectedStyleTags.includes(tag)}
                                     onCheckedChange={(checked) => {
+                                        // checked can be boolean or "indeterminate" — treat only true as checked
+                                        const isChecked = checked === true;
                                         const currentTags = selectedStyleTags;
-                                        const newTags = checked ? [...currentTags, tag] : currentTags.filter(t => t !== tag);
+                                        const newTags = isChecked ? [...currentTags, tag] : currentTags.filter(t => t !== tag);
                                         setValue('styleTags', newTags);
                                     }}
                                 />
@@ -127,8 +130,9 @@ export default function GeneratePage() {
                                     id={`mood-${tag}`}
                                     checked={selectedMoodTags.includes(tag)}
                                     onCheckedChange={(checked) => {
+                                        const isChecked = checked === true;
                                         const currentTags = selectedMoodTags;
-                                        const newTags = checked ? [...currentTags, tag] : currentTags.filter(t => t !== tag);
+                                        const newTags = isChecked ? [...currentTags, tag] : currentTags.filter(t => t !== tag);
                                         setValue('moodTags', newTags);
                                     }}
                                 />
@@ -170,8 +174,12 @@ export default function GeneratePage() {
                             <CardContent className="space-y-4">
                                 <div className="grid grid-cols-2 gap-2 aspect-square">
                                     {items.slice(0, 4).map(item => (
-                                        <div key={item.id} className="bg-secondary rounded-md overflow-hidden">
-                                            <Image src={item.imageUrl} alt={item.name} data-ai-hint={item['data-ai-hint']} width={150} height={150} className="w-full h-full object-cover"/>
+                                        <div key={item.id} className="bg-secondary rounded-md overflow-hidden flex items-center justify-center">
+                                            {item.imageUrl ? (
+                                              <Image src={item.imageUrl} alt={item.name} data-ai-hint={item['data-ai-hint']} width={150} height={150} className="w-full h-full object-cover"/>
+                                            ) : (
+                                              <div className="p-4 text-center text-sm text-muted-foreground">{item.name}</div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

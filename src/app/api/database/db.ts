@@ -1,43 +1,29 @@
-import mysql, { Connection } from 'mysql2/promise';
+import mysql, { Pool } from 'mysql2/promise';
 
-// Database connection credentials (replace with your actual credentials)
+// Use env vars (fallbacks kept for local dev)
 const dbConfig = {
-    host: 'localhost',
-    user: 'bhavya',
-    password: 'abcdef',
-    database: 'digital_wardrobe',
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'bhavya',
+  password: process.env.DB_PASSWORD || 'abcdef',
+  database: process.env.DB_NAME || 'digital_wardrobe',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 };
 
-let connection: Connection;
+let pool: Pool | null = null;
 
-async function connectToDatabase(): Promise<Connection> {
-    if (!connection) {
-        try {
-            connection = await mysql.createConnection(dbConfig);
-            console.log('Connected to the database.');
-        } catch (error) {
-            console.error('Error connecting to the database:', error);
-            throw error;
-        }
-    }
-    return connection;
+export async function connectToDatabase(): Promise<Pool> {
+  if (!pool) {
+    pool = mysql.createPool(dbConfig);
+    console.log('Created MySQL pool');
+  }
+  return pool;
 }
 
-// Export the connect function to get the database connection
-export { connectToDatabase };
-
-// Optional: Close the connection when the process exits
-process.on('exit', () => {
-    if (connection) {
-        connection.end();
-        console.log('Database connection closed.');
-    }
-});
-
-process.on('SIGINT', async () => {
-    if (connection) {
-        await connection.end();
-        console.log('Database connection closed.');
-    }
-    process.exit(0);
+// Optional: clean up on process exit (best-effort)
+process.on('exit', async () => {
+  if (pool) {
+    try { await pool.end(); console.log('DB pool closed'); } catch (e) {}
+  }
 });
