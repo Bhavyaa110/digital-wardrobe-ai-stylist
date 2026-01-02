@@ -1,29 +1,27 @@
-import mysql, { Pool } from 'mysql2/promise';
+import mysql, { Connection } from 'mysql2/promise';
 
-// Use env vars (fallbacks kept for local dev)
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'bhavya',
-  password: process.env.DB_PASSWORD || 'abcdef',
-  database: process.env.DB_NAME || 'digital_wardrobe',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+    // These must be set in your Vercel Project Settings
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: Number(process.env.DB_PORT) || 3306,
 };
 
-let pool: Pool | null = null;
+let connection: Connection;
 
-export async function connectToDatabase(): Promise<Pool> {
-  if (!pool) {
-    pool = mysql.createPool(dbConfig);
-    console.log('Created MySQL pool');
-  }
-  return pool;
+async function connectToDatabase(): Promise<Connection> {
+    if (!connection) {
+        try {
+            connection = await mysql.createConnection(dbConfig);
+            console.log('Connected to the database.');
+        } catch (error) {
+            console.error('Database connection failed:', error);
+            throw error; // This causes the 500 error you see in logs
+        }
+    }
+    return connection;
 }
 
-// Optional: clean up on process exit (best-effort)
-process.on('exit', async () => {
-  if (pool) {
-    try { await pool.end(); console.log('DB pool closed'); } catch (e) {}
-  }
-});
+export { connectToDatabase };
