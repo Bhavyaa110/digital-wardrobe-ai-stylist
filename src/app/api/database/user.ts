@@ -1,23 +1,24 @@
-import { connectToDatabase } from './db';
-import { OkPacket, RowDataPacket } from 'mysql2/promise';
+// src/app/api/database/user.ts
+import { supabase } from '../../../lib/supabase';
 
-export type User = {
-    id: number;
-    name: string;
-    email: string;
-    password: string;
-};
+export async function createUser(name: string, email: string, passwordHash: string) {
+  const { data, error } = await supabase
+    .from('users')
+    .insert([{ name, email, password_hash: passwordHash }])
+    .select('id')
+    .single();
 
-export async function createUser(name: string, email: string, passwordHash: string): Promise<number> {
-    const connection = await connectToDatabase();
-    const query = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-    const [results] = await connection.execute<OkPacket>(query, [name, email, passwordHash]);
-    return results.insertId;
+  if (error) throw error;
+  return data.id;
 }
 
-export async function getUserByEmail(email: string): Promise<User | undefined> {
-    const connection = await connectToDatabase();
-    const query = 'SELECT * FROM users WHERE email = ?';
-    const [rows] = await connection.execute<RowDataPacket[]>(query, [email]);
-    return rows.length > 0 ? (rows[0] as User) : undefined;
+export async function getUserByEmail(email: string) {
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('email', email)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error; // Ignore "not found" error
+  return data || undefined;
 }
