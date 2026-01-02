@@ -1,5 +1,4 @@
-// src/app/api/database/user.ts
-import { supabase } from '../../../lib/supabase';
+import { supabase } from './supabase';
 
 export async function createUser(name: string, email: string, passwordHash: string) {
   const { data, error } = await supabase
@@ -19,6 +18,6 @@ export async function getUserByEmail(email: string) {
     .eq('email', email)
     .single();
 
-  if (error && error.code !== 'PGRST116') throw error; // Ignore "not found" error
+  if (error && error.code !== 'PGRST116') throw error; // Handle "not found"
   return data || undefined;
 }
