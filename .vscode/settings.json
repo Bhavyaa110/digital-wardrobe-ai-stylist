@@ -1,4 +1,77 @@
 {
     "IDX.aI.enableInlineCompletion": true,
-    "IDX.aI.enableCodebaseIndexing": true
+    "IDX.aI.enableCodebaseIndexing": true,
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "driver": "MySQL",
+            "name": "Railway",
+            "connectString": "${{ MySQL.MYSQL_URL }}"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "mysql.railway.internal",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "Railway",
+            "database": "railway",
+            "username": "root",
+            "askForPassword": true
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "reseau.proxy.rlwy.net",
+            "port": 52554,
+            "driver": "MySQL",
+            "name": "Railway",
+            "database": "railway",
+            "username": "root",
+            "askForPassword": true
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "reseau.proxy.rlwy.net:52554reseau.proxy.rlwy.net",
+            "port": 52554,
+            "driver": "MySQL",
+            "name": "Railway",
+            "database": "railway",
+            "username": "root",
+            "askForPassword": true
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "reseau.proxy.rlwy.net",
+            "port": 52554,
+            "driver": "MySQL",
+            "name": "Railway2",
+            "database": "railway",
+            "username": "root",
+            "askForPassword": true
+        }
+    ]
 }

@@ -58,9 +58,12 @@ export function WardrobeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Initial load with delay to ensure token is in localStorage after auth redirect
   useEffect(() => {
-    refreshItems();
-    refreshOutfits();
+    const timer = setTimeout(() => {
+      refreshItems();
+      refreshOutfits();
+    }, 500);
 
     const fetchWeather = async (lat: number, lon: number) => {
       try {
@@ -81,19 +84,36 @@ export function WardrobeProvider({ children }: { children: ReactNode }) {
     };
 
     const fetchWeatherByIp = async () => {
-  try {
-    const res = await fetch('http://ip-api.com/json/');
-    const data = await res.json();
-    if (data.lat && data.lon) {
-      await fetchWeather(data.lat, data.lon);
-    } else {
-      await fetchWeather(28.6139, 77.2090);
-    }
-  } catch {
-    await fetchWeather(28.6139, 77.2090);
-  }
-};
+      try {
+        const res = await fetch('https://ip-api.com/json/');
+        const data = await res.json();
+        if (data.lat && data.lon) {
+          await fetchWeather(data.lat, data.lon);
+        } else {
+          await fetchWeather(28.6139, 77.2090);
+        }
+      } catch {
+        await fetchWeather(28.6139, 77.2090);
+      }
+    };
+
     fetchWeatherByIp();
+
+    return () => clearTimeout(timer);
+  }, [refreshItems, refreshOutfits]);
+
+  // Re-fetch when token changes (e.g. after login/signup redirect)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const token = localStorage.getItem('fitzy_token');
+      if (token) {
+        refreshItems();
+        refreshOutfits();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, [refreshItems, refreshOutfits]);
 
   const addClothingItem = async (itemData: Omit<ClothingItem, 'id' | 'createdAt'>) => {
