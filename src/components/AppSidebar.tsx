@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -24,11 +23,14 @@ import {
   Settings,
   CircleUserRound,
   PersonStanding,
+  LogOut
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { useAuth } from '../context/AuthContext';
+import { useRouter } from 'next/navigation';
+
 const menuItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/closet", label: "My Closet", icon: Shirt },
@@ -45,8 +47,14 @@ const tools = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { user } = useAuth();
-  
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -97,12 +105,16 @@ export function AppSidebar() {
       <SidebarFooter>
          <SidebarMenu>
              <SidebarMenuItem>
-                <Link href="/login">
-                    <SidebarMenuButton tooltip="User Profile">
-                        <CircleUserRound/>
-                        <span>{user?.name || 'Login'}</span>
-                    </SidebarMenuButton>
-                </Link>
+                <SidebarMenuButton tooltip="User Profile">
+                    <CircleUserRound/>
+                    <span>{user?.name || 'User'}</span>
+                </SidebarMenuButton>
+             </SidebarMenuItem>
+             <SidebarMenuItem>
+                <SidebarMenuButton onClick={handleLogout} tooltip="Logout">
+                    <LogOut/>
+                    <span>Logout</span>
+                </SidebarMenuButton>
              </SidebarMenuItem>
          </SidebarMenu>
       </SidebarFooter>

@@ -2,21 +2,19 @@ export type Category = 'Tops' | 'Bottoms' | 'Outerwear' | 'Footwear' | 'Accessor
 export type Season = 'Spring' | 'Summer' | 'Autumn' | 'Winter' | 'All-Season';
 export type Occasion = 'Casual' | 'Formal' | 'Sporty' | 'Work' | 'Party';
 
-
 export interface ClothingItem {
   id: string;
   name: string;
   category: Category;
+  imageUrl: string;
   color: string;
   brand: string;
   season: Season;
   fabric: string;
   occasion: Occasion;
-  imageUrl: string;
   'data-ai-hint'?: string;
-  styleTags: string[];
-  moodTags: string[];
-  pinned: boolean; 
+  createdAt: string;
+  pinned?: boolean;
 }
 
 export interface Outfit {
@@ -26,6 +24,7 @@ export interface Outfit {
   items: ClothingItem[];
   imageUrl?: string;
   pinned: boolean;
+  createdAt?: string;
 }
 
 export interface WeatherInfo {

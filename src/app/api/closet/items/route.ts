@@ -1,40 +1,69 @@
-import { NextResponse } from 'next/server';
-import { getClothingItemsFromDb, createClothingItemInDb } from '../../database/closet';
+import { NextRequest, NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
+import {
+  getClothingItemsFromDb,
+  createClothingItemInDb,
+  deleteClothingItemFromDb,
+} from '../../database/closet';
 
-export async function GET() {
+const JWT_SECRET = process.env.JWT_SECRET || 'change-this-secret';
+
+function getUserId(request: NextRequest): string | null {
   try {
-    const rows = await getClothingItemsFromDb();
-    return NextResponse.json(rows, { status: 200 });
-  } catch (err) {
-    console.error('/api/closet/items GET error', err);
-    return NextResponse.json({ error: 'Failed to fetch items' }, { status: 500 });
+    const auth = request.headers.get('authorization');
+    if (!auth?.startsWith('Bearer ')) return null;
+    const payload = jwt.verify(auth.slice(7), JWT_SECRET) as { id: string };
+    return payload.id;
+  } catch {
+    return null;
   }
 }
 
-export async function POST(request: Request) {
+export async function GET(request: NextRequest) {
+  const userId = getUserId(request);
+  if (!userId) return NextResponse.json([], { status: 200 });
+
   try {
-    const body = await request.json().catch(() => ({}));
-    if (!body.name || !body.category) {
-      return NextResponse.json({ error: 'Missing required fields: name, category' }, { status: 400 });
-    }
-    const insertId = await createClothingItemInDb({
-      name: body.name,
-      category: body.category,
-      color: body.color,
-      brand: body.brand,
-      season: body.season,
-      fabric: body.fabric,
-      occasion: body.occasion,
-      imageUrl: body.imageUrl,
-      dataAiHint: body['data-ai-hint'] || body.dataAiHint,
-      styleTags: body.styleTags || [],
-      moodTags: body.moodTags || [],
-    });
-    const rows = await getClothingItemsFromDb();
-    const created = rows.find(r => r.id === insertId) || null;
-    return NextResponse.json({ id: insertId, item: created }, { status: 201 });
+    const items = await getClothingItemsFromDb(userId);
+    return NextResponse.json(items);
   } catch (err) {
-    console.error('/api/closet/items POST error', err);
+    console.error('/api/closet/items GET error:', err);
+    return NextResponse.json([], { status: 200 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const userId = getUserId(request);
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  try {
+    const body = await request.json();
+    if (!body.name || !body.category)
+      return NextResponse.json({ error: 'name and category are required' }, { status: 400 });
+
+    const id = await createClothingItemInDb(userId, body);
+    const items = await getClothingItemsFromDb(userId);
+    const created = items.find((i: any) => i.id === id) || null;
+    return NextResponse.json({ id, item: created }, { status: 201 });
+  } catch (err) {
+    console.error('/api/closet/items POST error:', err);
     return NextResponse.json({ error: 'Failed to create item' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  const userId = getUserId(request);
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    if (!id) return NextResponse.json({ error: 'Item id is required' }, { status: 400 });
+
+    await deleteClothingItemFromDb(userId, id);
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('/api/closet/items DELETE error:', err);
+    return NextResponse.json({ error: 'Failed to delete item' }, { status: 500 });
   }
 }

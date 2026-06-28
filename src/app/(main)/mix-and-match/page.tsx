@@ -56,9 +56,9 @@ export default function MixAndMatchPage() {
       name: outfitName,
       occasion: outfitOccasion,
       items: selectedItems,
+      pinned: false,
     });
 
-    toast({ title: 'Outfit Saved!', description: `${outfitName} has been saved.` });
     setSelectedItems([]);
     setOutfitName('');
     setOutfitOccasion('Casual');

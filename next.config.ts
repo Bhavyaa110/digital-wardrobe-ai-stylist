@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: { enabled: true }
+    serverActions: {
+      enabled: true,
+      bodySizeLimit: '10mb',
+    },
   },
   eslint: {
     ignoreDuringBuilds: true,

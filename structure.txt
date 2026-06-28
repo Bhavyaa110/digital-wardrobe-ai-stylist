@@ -1,0 +1,113 @@
+digital-wardrobe-ai-stylist/
+├── .vscode
+│   └── settings.json
+├── src
+│   ├── ai
+│   │   └── flows
+│   │       ├── clothing-item-background-removal.ts
+│   │       └── tag-clothing-item.ts
+│   ├── app
+│   │   ├── (auth)
+│   │   │   ├── login
+│   │   │   │   └── page.tsx
+│   │   │   └── signup
+│   │   │       └── page.tsx
+│   │   ├── (main)
+│   │   │   ├── analytics
+│   │   │   │   └── page.tsx
+│   │   │   ├── calendar
+│   │   │   │   └── page.tsx
+│   │   │   ├── closet
+│   │   │   │   └── page.tsx
+│   │   │   ├── generate
+│   │   │   │   └── page.tsx
+│   │   │   ├── mix-and-match
+│   │   │   │   └── page.tsx
+│   │   │   ├── outfits
+│   │   │   │   └── page.tsx
+│   │   │   ├── try-on
+│   │   │   │   └── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── api
+│   │   │   ├── auth
+│   │   │   │   ├── login
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── me
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── signup
+│   │   │   │       └── route.ts
+│   │   │   ├── calendar
+│   │   │   │   └── route.ts
+│   │   │   ├── closet
+│   │   │   │   └── items
+│   │   │   │       └── route.ts
+│   │   │   ├── clothing-background
+│   │   │   │   └── route.ts
+│   │   │   ├── database
+│   │   │   │   ├── calendar.ts
+│   │   │   │   ├── closet.ts
+│   │   │   │   ├── db.ts
+│   │   │   │   └── user.ts
+│   │   │   ├── generate-outfit
+│   │   │   │   └── route.ts
+│   │   │   ├── generate-tryon
+│   │   │   │   └── route.ts
+│   │   │   └── outfits
+│   │   │       └── route.ts
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   └── layout.tsx
+│   ├── components
+│   │   ├── auth
+│   │   │   └── ProtectedRoute.tsx
+│   │   ├── closet
+│   │   │   ├── AddClothingItemForm.tsx
+│   │   │   └── ClothingList.tsx
+│   │   ├── ui
+│   │   │   ├── alert-dialog.tsx
+│   │   │   ├── alert.tsx
+│   │   │   ├── avatar.tsx
+│   │   │   ├── badge.tsx
+│   │   │   ├── button.tsx
+│   │   │   ├── calendar.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   ├── dropdown-menu.tsx
+│   │   │   ├── form.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── label.tsx
+│   │   │   ├── popover.tsx
+│   │   │   ├── progress.tsx
+│   │   │   ├── radio-group.tsx
+│   │   │   ├── scroll-area.tsx
+│   │   │   ├── select.tsx
+│   │   │   ├── separator.tsx
+│   │   │   ├── sheet.tsx
+│   │   │   ├── sidebar.tsx
+│   │   │   ├── skeleton.tsx
+│   │   │   ├── switch.tsx
+│   │   │   ├── tabs.tsx
+│   │   │   ├── toast.tsx
+│   │   │   ├── toaster.tsx
+│   │   │   └── tooltip.tsx
+│   │   └── AppSidebar.tsx
+│   ├── context
+│   │   ├── AuthContext.tsx
+│   │   └── WardrobeContext.tsx
+│   └── hooks
+│       ├── use-mobile.tsx
+│       └── use-toast.ts
+├── .env.local
+├── .eslintrc.json
+├── .gitignore
+├── folder_structure.py
+├── next-env.d.ts
+├── next.config.ts
+├── package.json
+├── postcss.config.mjs
+├── schema.sql
+├── structure.txt
+├── tailwind.config.ts
+├── tsconfig.json
+└── vercel.json

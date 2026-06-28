@@ -61,6 +61,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       "formNoValidate",
       "autoFocus",
       "aria-disabled",
+      "onClick",
     ])
 
     const domProps: Record<string, any> = {}

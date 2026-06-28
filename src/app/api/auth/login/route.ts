@@ -1,51 +1,37 @@
-// src/app/api/auth/login/route.ts
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { createHmac } from "crypto";
-import { getUserByEmail } from "../../database/user";
+import { NextRequest, NextResponse } from 'next/server';
+import { getUserByEmail, verifyPassword } from '../../database/user';
+import jwt from 'jsonwebtoken';
 
-export async function POST(req: Request) {
+const JWT_SECRET = process.env.JWT_SECRET || 'change-this-secret';
+
+export async function POST(request: NextRequest) {
   try {
-    const body = await req.json().catch(() => ({}));
-    const email = (body.email || "").toLowerCase().trim();
-    const password = body.password || "";
+    const { email, password } = await request.json();
 
-    if (!email || !password) {
-      return NextResponse.json({ message: "Email and password are required." }, { status: 400 });
-    }
+    if (!email || !password)
+      return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
 
-    // 1. Fetch user from Supabase
     const user = await getUserByEmail(email);
+    if (!user)
+      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
 
-    if (!user) {
-      return NextResponse.json({ message: "Invalid credentials." }, { status: 401 });
-    }
+    const valid = await verifyPassword(password, user.password);
+    if (!valid)
+      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
 
-    // 2. Compare passwords using bcryptjs
-    const isMatch = await bcrypt.compare(password, user.password_hash);
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
 
-    if (!isMatch) {
-      return NextResponse.json({ message: "Invalid credentials." }, { status: 401 });
-    }
-
-    // 3. Generate token (using your original HMAC logic)
-    const jwtSecret = process.env.JWT_SECRET || "dev-secret";
-    const token = createHmac("sha256", jwtSecret)
-      .update(`${user.id}:${Date.now()}`)
-      .digest("hex");
-
-    return NextResponse.json({ 
-        message: "Login successful", 
-        user: { 
-            id: user.id, 
-            email: user.email, 
-            name: user.name 
-        }, 
-        token 
-    }, { status: 200 });
-
-  } catch (err: any) {
-    console.error("Login unexpected error:", err);
-    return NextResponse.json({ message: "Internal server error." }, { status: 500 });
+    return NextResponse.json({
+      message: 'Login successful',
+      token,
+      user: { id: user.id, name: user.name, email: user.email },
+    });
+  } catch (err) {
+    console.error('/api/auth/login error:', err);
+    return NextResponse.json({ error: 'Login failed' }, { status: 500 });
   }
 }

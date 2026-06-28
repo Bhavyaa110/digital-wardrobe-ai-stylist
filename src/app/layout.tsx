@@ -5,7 +5,7 @@ import { WardrobeProvider } from '../context/WardrobeContext';
 import { AuthProvider } from '../context/AuthContext';
 
 export const metadata: Metadata = {
-  title: 'Fitzy Wardrobe',
+  title: 'Fitzy Digital Wardrobe',
   description: 'Your digital wardrobe stylist',
 };
 
@@ -21,7 +21,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet"></link>
       </head>
-      <body className="font-body antialiased">
+      <body className="font-body antialiased" suppressHydrationWarning>
         <AuthProvider>
           <WardrobeProvider>
             {children}

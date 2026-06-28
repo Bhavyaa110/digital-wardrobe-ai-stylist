@@ -13,10 +13,28 @@ import Image from "next/image";
 import Link from "next/link";
 import { PlusCircle, Sparkles, Swords, ArrowRight } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { useState } from "react";
+
 export default function DashboardPage() {
-  const { outfits } = useWardrobe();
+  const { clothingItems = [], outfits } = useWardrobe();
   const { user } = useAuth();
+  const [selectedOutfit, setSelectedOutfit] = useState<string | null>(null);
   const pinnedOutfits = outfits.filter((o) => o.pinned);
+
+  const recentItems = clothingItems
+    .sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+    .slice(0, 4);
+
+  const categoryStats = {
+    tops: clothingItems.filter((item) => item.category === "Tops").length,
+    bottoms: clothingItems.filter((item) => item.category === "Bottoms").length,
+    outerwear: clothingItems.filter((item) => item.category === "Outerwear")
+      .length,
+    footwear: clothingItems.filter((item) => item.category === "Footwear")
+      .length,
+  };
 
   return (
     <div className="space-y-8">

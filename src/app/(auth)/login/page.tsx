@@ -1,6 +1,5 @@
 "use client";
-import { Button } from "../../../components/ui/button"
-import { useState } from 'react';
+import { Button } from "../../../components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,38 +7,55 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../../../components/ui/card"
-import { Input } from "../../../components/ui/input"
-import { Label } from "../../../components/ui/label"
-import { Sparkles } from "lucide-react"
-import Link from "next/link"
+} from "../../../components/ui/card";
+import { Input } from "../../../components/ui/input";
+import { Label } from "../../../components/ui/label";
+import { useState, useEffect } from "react";
+import { Sparkles, Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from '../../../context/AuthContext';
+import { useToast } from '../../../hooks/use-toast';
 
 export default function LoginPage() {
-  const { login } = useAuth();
-  const router = useRouter(); 
+  const router = useRouter();
+  const { login, user, isLoading, hasHydrated } = useAuth();
+  const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  useEffect(() => {
+    if (hasHydrated && !isLoading && user) router.replace("/");
+  }, [hasHydrated, isLoading, user, router]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      login(data.user);               // ✅ sets user globally + localStorage
-      router.push('/'); // ✅ redirect to dashboard
-    } else {
-      console.error('Login failed:', data.message);
+    try {
+      await login(email, password);
+      router.push('/');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Login Failed',
+        description: error.message || 'Invalid email or password',
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  if (!hasHydrated) return null;
+  if (!isLoading && user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
@@ -51,47 +67,56 @@ export default function LoginPage() {
             </div>
             <h1 className="text-3xl font-headline">Fitzy</h1>
           </div>
-          <CardTitle>Welcome Back!</CardTitle>
-          <CardDescription>Log in to access your digital wardrobe.</CardDescription>
+          <CardTitle>Welcome Back</CardTitle>
+          <CardDescription>Log in to your Fitzy account.</CardDescription>
         </CardHeader>
-
-        <form onSubmit={handleLogin}>
-          <CardContent className="grid gap-4">
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="example@gmail.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            <div className="grid w-full items-center gap-4">
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="example@gmail.com" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  required 
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="password">Password</Label>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  placeholder="Your password" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  required 
+                />
+              </div>
             </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-          </CardContent>
-
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full">Login</Button>
-            <p className="text-sm text-center text-muted-foreground">
-              Don't have an account?{" "}
-              <Link href="/signup" className="underline text-primary">
-                Sign up
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
+            <Button type="submit" className="w-full mt-4" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Logging in...
+                </>
+              ) : (
+                "Log In"
+              )}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="flex flex-col gap-4">
+          <p className="text-sm text-center text-muted-foreground">
+            Don't have an account?{" "}
+            <Link href="/signup" className="underline text-primary">
+              Sign up
+            </Link>
+          </p>
+        </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

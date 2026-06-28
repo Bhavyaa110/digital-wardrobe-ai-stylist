@@ -1,43 +1,28 @@
-import { NextResponse } from 'next/server';
-import { createUser } from '../../database/user';
-import bcrypt from 'bcryptjs'; // Recommended over 'bcrypt' for Vercel
+import { NextRequest, NextResponse } from 'next/server';
+import { createUser, getUserByEmail } from '../../database/user';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { name, email, password } = await request.json();
 
-    if (!name || !email || !password) {
-      return NextResponse.json(
-        { message: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
+    if (!name || !email || !password)
+      return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    if (password.length < 6)
+      return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
 
-    // Save user to Supabase
-    const userId = await createUser(name, email, hashedPassword);
+    const existing = await getUserByEmail(email);
+    if (existing)
+      return NextResponse.json({ error: 'Email already in use' }, { status: 409 });
+
+    const id = await createUser(name, email, password);
 
     return NextResponse.json(
-      { message: 'User created successfully', userId },
+      { message: 'Account created', user: { id, name, email } },
       { status: 201 }
     );
-
-  } catch (error: any) {
-    console.error('Signup error:', error);
-    
-    // Supabase/PostgreSQL duplicate key error code is '23505'
-    if (error.code === '23505' || error.message?.includes('duplicate key')) {
-      return NextResponse.json(
-        { message: 'Email already registered' },
-        { status: 409 }
-      );
-    }
-
-    return NextResponse.json(
-      { message: 'Internal Server Error' },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error('/api/auth/signup error:', err);
+    return NextResponse.json({ error: 'Signup failed' }, { status: 500 });
   }
 }
